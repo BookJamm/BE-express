@@ -20,7 +20,7 @@ app.get("/", (req, res) => res.status(200).send(response(baseResponse.SUCCESS, "
 app.use("/places", placesRouter);
 app.use("/records", recordsRouter);
 app.use("/reviews", reviewsRouter);
-app.use(activityRoute)
+app.use("/activities", activityRoute);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
 
