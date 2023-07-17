@@ -5,9 +5,10 @@ const activityDao = {
             (SELECT COUNT(*) FROM activity_likes WHERE activities.activity_id = activity_likes.activity_id) AS like_num 
             FROM activities
             WHERE activities.activity_id = ?
-            ORDER BY created_ar DESC;
             `;
         const [queryActivity] = await connection.query(sql, activityId);
+        console.log(queryActivity);
+
         return queryActivity;
     },
 }

@@ -7,7 +7,8 @@ const activityProvider = {
         try{
             const connection = await pool.getConnection(async conn => conn);
             const activityResult = await activityDao.selectActivityByActivityId(connection, activityId);
-
+            console.log(activityResult);
+            console.log(typeof(activityResult));
             if(Object.keys(activityResult).length === 0) {
                 return {error: true};
             }

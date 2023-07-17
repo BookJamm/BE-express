@@ -5,9 +5,9 @@ import baseResponse from "./baseResponeStatus";
 import recordsRouter from "../src/records/recordsRouter";
 import placesRouter from "../src/places/placesRouter";
 import reviewsRouter from "../src/reviews/reviewsRouter";
-import activityRoute from "../src/Activity/activityRoute";
 import authRouter from "../src/auth/authRouter";
 import userRouter from "../src/user/userRouter";
+import activityRouter from "../src/Activity/activityRouter";
 
 const app = express();
 
@@ -20,10 +20,9 @@ app.get("/", (req, res) => res.status(200).send(response(baseResponse.SUCCESS, "
 app.use("/places", placesRouter);
 app.use("/records", recordsRouter);
 app.use("/reviews", reviewsRouter);
-app.use(activityRoute)
+app.use("/activities", activityRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
-app.use(activityRoute);
 app.use("/user", userRouter);
 
 export default app;

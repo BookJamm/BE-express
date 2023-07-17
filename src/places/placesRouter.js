@@ -1,7 +1,5 @@
 import express from "express";
 import placesController from "./placesController";
-import activityController from "../Activity/activityController";
-import activityRouter from "../Activity/activityRoute";
 
 const placesRouter = express.Router();
 
