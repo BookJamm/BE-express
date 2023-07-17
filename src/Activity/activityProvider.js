@@ -21,24 +21,7 @@ const activityProvider = {
         }
     }, 
 
-    retrieveActivitiesByPlaceId: async (placeId) => {
-        try {
-            const connection = await pool.getConnection(async conn => conn);
-            const activitiesResult = await activityDao.selectActivitiesByPlaceId(connection, placeId);
-            console.log(activitiesResult);
-            console.log(typeof(activitiesResult));
-            if(Object.keys(activitiesResult).length == 0) {
-                return {error: true};
-            }
-            connection.release();
-            return {
-                error: false,
-                result: activitiesResult
-            };
-        } catch (err) {
-            return {error: true};
-        }
-    }
+
 
 }
 

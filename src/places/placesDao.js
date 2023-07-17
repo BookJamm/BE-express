@@ -88,6 +88,17 @@ const placesDao = {
 
     return queryResult;
   },
+  selectActivitiesByPlaceId: async (connection, placeId) => {
+    const sql = `
+        SELECT * 
+        FROM activities
+        WHERE place_id = ?;
+        `
+
+    const [queryActivities] = await connection.query(sql, placeId);
+
+    return queryActivities;
+  }
 };
 
 export default placesDao;

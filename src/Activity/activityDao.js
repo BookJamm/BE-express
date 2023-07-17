@@ -10,18 +10,6 @@ const activityDao = {
         const [queryActivity] = await connection.query(sql, activityId);
         return queryActivity;
     },
-
-    selectActivitiesByPlaceId: async (connection, placeId) => {
-        const sql = `
-        SELECT * 
-        FROM activities
-        WHERE place_id = ?;
-        `
-        
-        const [queryActivities] = await connection.query(sql, placeId);
-        
-        return queryActivities;
-    }
 }
 
 export default activityDao;
