@@ -1,6 +1,6 @@
 import logger from "../../config/logger";
 
-const usersDao = {
+const userDao = {
   selectRecordsByUserId: async (connection, userId) => {
     const sql = `SELECT cr.record_id, cr.author, cr.created_at, cr.status, cr.date, cr.place_id, places.name, places.category, cr.isbn, cr.activities, cr.emotions, cr.contents, cr.isNotPublic, cr.comment_not_allowed, cr.comment_count, cr.like_count, cr.images_url
         FROM (SELECT *, (SELECT GROUP_CONCAT(image_url separator '|') FROM record_images WHERE records.record_id = record_images.record_id) as images_url FROM records WHERE author = ${userId}) AS cr 
@@ -174,4 +174,4 @@ const usersDao = {
   },
 };
 
-export default usersDao;
+export default userDao;

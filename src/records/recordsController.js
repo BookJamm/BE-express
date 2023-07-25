@@ -1,18 +1,19 @@
 import baseResponse from "../../config/baseResponeStatus";
 import { response } from "../../config/response";
-import recordsProvider from "./recordsProvider";
 import recordsService from "./recordsService";
+import recordsProvider from "./recordsProvider";
 
 const recordsController = {
     postRecord: async (req, res) => {
         try{
-            const {userId, place, isbn, date, emotions, activity, contents, isNotPublic, commentNotAllowed} = req.body;
-            const chkUser = await recordsProvider.checkUser(userId);
+            let {userId, place, isbn, date, emotions, activity, contents, isNotPublic, comment_not_allowed} = req.body;
+            console.log(req.body);
+            const chkUser = await recordsService.checkUser(userId);
             if (!chkUser) {
                 return res.status(404).json(response(baseResponse.USER_NOT_FOUND))
             }
-            const recordData = [userId, place, isbn, date, activity, emotions, contents, isNotPublic, commentNotAllowed];
-            const result = await recordsService.postRecord(recordData);
+            const recordData = [userId, place, isbn, date, activity, emotions, contents, isNotPublic, comment_not_allowed];
+            const result = await recordsProvider.postRecord(recordData);
             if (result.error)
                 return res.status(500).json(response(baseResponse.SERVER_ERROR));
             return res.status(201).json(response(baseResponse.SUCCESS, result));
@@ -28,23 +29,23 @@ const recordsController = {
             if (!userId) {
                 return res.status(400).json(response(baseResponse.RECORDS_USERID_READ_FAIL));
             }
-            const chkUser = await recordsProvider.checkUser(userId);
+            const chkUser = await recordsService.checkUser(userId);
             if (!chkUser) {
                 return res.status(404).json(response(baseResponse.USER_NOT_FOUND))
             }
             const friendId = req.query.friendId;
             if (friendId){
-                const chkUser = await recordsProvider.checkUser(friendId);
+                const chkUser = await recordsService.checkUser(friendId);
                 if (!chkUser) {
                     return res.status(404).json(response(baseResponse.USER_NOT_FOUND))
                 }
                 else{
-                    const chkFollow = await recordsProvider.checkFollow(userId, friendId);
+                    const chkFollow = await recordsService.checkFollow(userId, friendId);
                     if (!chkFollow) {
                         return res.status(400).json(response(baseResponse.NOT_FRIEND))
                     }
                     else{
-                        const records = await recordsProvider.getRecordsByUserId(userId, friendId)
+                        const records = await recordsService.getRecordsByUserId(userId, friendId)
                         if (records.error)
                             return res.status(500).json(response(baseResponse.SERVER_ERROR))
                         return res.status(200).json(response(baseResponse.SUCCESS, records));
@@ -52,7 +53,7 @@ const recordsController = {
                 }
             }
             else{
-                const records = await recordsProvider.getRecordsAll(userId)
+                const records = await recordsService.getRecordsAll(userId)
                 if (records.error)
                     return res.status(500).json(response(baseResponse.SERVER_ERROR))
                 return res.status(200).json(response(baseResponse.SUCCESS, records));
@@ -66,14 +67,14 @@ const recordsController = {
     postRecordImages: async (req, res) => {
         try {
             const recordId = req.params.recordId;
-            if (!recordId || recordsProvider.checkRecord(recordId).error)
+            if (!recordId || recordsService.checkRecord(recordId).error)
                 return res.status(404).json(response(baseResponse.RECORDID_NOT_FOUND))
             const photos = req.files;
             const images_url = [];
             for(let i = 0; i < photos.length; i++){
                images_url.push(photos[i].location);    
             }
-            const result = await recordsService.postRecordImages(recordId, images_url);
+            const result = await recordsProvider.postRecordImages(recordId, images_url);
             if (result.error)
                 return res.status(500).json(response(baseResponse.SERVER_ERROR));
             return res.status(201).json(response(baseResponse.SUCCESS, result));
@@ -86,10 +87,10 @@ const recordsController = {
     putRecord: async (req, res) => {
         try {
             const recordId = req.params.recordId;
-            if (!recordId || recordsProvider.checkRecord(recordId).error)
+            if (!recordId || recordsService.checkRecord(recordId).error)
                 return res.status(404).json(response(baseResponse.RECORDID_NOT_FOUND))
             const recordData = req.body;
-            const result = await recordsService.putRecord(recordId, recordData);
+            const result = await recordsProvider.putRecord(recordId, recordData);
             if (result.error)
                 return res.status(500).json(response(baseResponse.SERVER_ERROR));
             return res.status(202).json(response(baseResponse.SUCCESS, result));
@@ -102,9 +103,9 @@ const recordsController = {
     deleteRecordImages: async (req, res) => {
         try {
             const recordId = req.params.recordId;
-            if (!recordId || recordsProvider.checkRecord(recordId).error)
+            if (!recordId || recordsService.checkRecord(recordId).error)
                 return res.status(404).json(response(baseResponse.RECORDID_NOT_FOUND))
-            const result = await recordsService.deleteRecordImages(recordId, recordId);
+            const result = await recordsProvider.deleteRecordImages(recordId, recordId);
             if (result.error)
                 return res.status(500).json(response(baseResponse.SERVER_ERROR));
             return res.status(202).json(response(baseResponse.SUCCESS, result));
@@ -119,21 +120,21 @@ const recordsController = {
             const commentId = req.params.commentId;
             const userId = req.body.userId;
             const contents = req.body.contents;
-            if (!commentId || await recordsProvider.checkComment(commentId).error === true)
+            if (!commentId || await recordsService.checkComment(commentId).error === true)
                 return res.status(404).json(response(baseResponse.COMMENT_NOT_FOUND));
             if (!userId) return res.status(404).json(response(baseResponse.RECORDS_USERID_READ_FAIL));
-            const chkUser= await recordsProvider.checkUser(userId);
+            const chkUser= await recordsService.checkUser(userId);
             if (chkUser.error) {
                 console.log(123);
                 return res.status(404).json(response(baseResponse.USER_NOT_FOUND));
             }
-            const owner = await recordsProvider.checkOwner(userId, commentId)
+            const owner = await recordsService.checkOwner(userId, commentId)
             if (owner.owner === false)
                 return res.status(401).json(response(baseResponse.IS_NOT_OWNER));
             if (owner.error){
                 return res.status(500).json(response(baseResponse.SERVER_ERROR));
             }
-            const result = await recordsService.patchComment(commentId, contents);
+            const result = await recordsProvider.patchComment(commentId, contents);
             if (result.error)
                 return res.status(500).json(response(baseResponse.SERVER_ERROR));
             return res.status(202).json(response(baseResponse.SUCCESS, result));

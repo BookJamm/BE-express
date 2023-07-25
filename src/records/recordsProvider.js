@@ -1,107 +1,96 @@
 import pool from "../../config/database";
 import recordsDao from "./recordsDao";
+
 const recordsProvider = {
-  getRecordsByUserId: async (userId, friendId) => {
-    try {
-      const connection = await pool.getConnection(async (conn) => conn);
-      const recordsResult = await recordsDao.selectRecordsByFriendId(connection, userId, friendId);
-      connection.release();
-      if (recordsResult.error) return { error: true };
+    postRecord: async (recordData) => {
+        try {
+            const connection = await pool.getConnection();
+            const record = await recordsDao.insertRecord(connection, recordData);
+            connection.release();
+            if (record.error)
+                return {error: true}
+            return {recorded: true, recordId: record.insertId};
+        } catch (error) {
+            return {error: true}
+        }
+    },
 
-      for (let i = 0; i < recordsResult.length; i++) {
-        if (recordsResult[i].images_url) recordsResult[i].images_url = recordsResult[i].images_url.split("|");
-      }
-      return recordsResult;
-    } catch (err) {
-      console.error(err);
-      return { error: true };
-    }
-  },
+    postRecordImages: async (recordId, images_url) => {
+        try {
+            const connection = await pool.getConnection();
+            const record = await recordsDao.insertRecordImages(connection, recordId, images_url);
+            connection.release();
+            if (record.error)
+                return {error: true}
+            return {recorded: true};
+        } catch (error) {
+            return {error: true}
+        }
+    },
 
-  getRecordsAll: async (userId) => {
-    try {
-      const connection = await pool.getConnection(async (conn) => conn);
-      const recordsResult = await recordsDao.selectRecordsAll(connection, userId);
-      connection.release();
-      if (recordsResult.error) return { error: true };
-      for (let i = 0; i < recordsResult.length; i++) {
-        if (recordsResult[i].images_url) recordsResult[i].images_url = recordsResult[i].images_url.split("|");
-      }
-      return recordsResult;
-    } catch (error) {
-      console.error(error);
-      return { error: true };
-    }
-  },
+    retrieveCommentsByRecordId: async (recordId) => {
+        try {
+            const connection = await pool.getConnection(async conn => conn);
+            const commentResult = await recordsDao.selectCommentsByRecordId(connection, recordId);
 
-  checkFollow: async (userId, friendId) => {
-    try {
-      const connection = await pool.getConnection(async (conn) => conn);
-      const chk = await recordsDao.checkFollow(connection, userId, friendId);
-      connection.release();
-      if (chk.error) return { error: true };
-      return chk;
-    } catch (error) {
-      console.error(error);
-      return { error: true };
-    }
-  },
+            const recordCnt = await recordsDao.checkRecord(connection, recordId);
+            console.log(recordCnt);
+            if (recordCnt == 0) {
+                return {error: true, cause:"record"};
+            }
 
-  checkUser: async (userId) => {
-    try {
-      const connection = await pool.getConnection(async (conn) => conn);
-      const chk = await recordsDao.checkUser(connection, userId);
-      connection.release();
-      if (chk === 0 || chk.error) {
-        console.log(chk);
-        return { error: true };
-      }
-      return chk;
-    } catch (error) {
-      console.error(error);
-      return { error: true };
-    }
-  },
+            if(Object.keys(commentResult).length == 0) {
+                return {error: true, cause:"comment"};
+            }
+            connection.release();
+            return {
+                error:false,
+                result:commentResult
+            };
+        } catch (err) {
+            return { error:true };
+        }
+    },
 
-  checkRecord: async (recordId) => {
-    try {
-      const connection = await pool.getConnection(async (conn) => conn);
-      const result = await recordsDao.checkRecord(connection, recordId);
-      connection.release();
-      if (result.error) return { error: true };
-      return result;
-    } catch (error) {
-      console.error(error);
-      return { error: true };
-    }
-  },
+    putRecord: async (recordId, recordData) => {
+        try {
+            const connection = await pool.getConnection();
+            const result = await recordsDao.updateRecord(connection, recordId, recordData);
+            connection.release();
+            if (result.error)
+                return {error: true}
+            return {updated: true};
+        } catch (error) {
+            return { error:true };
+        }
+    },
 
-  checkComment: async (commentId) => {
-    try {
-      const connection = await pool.getConnection(async (conn) => conn);
-      const result = await recordsDao.checkComment(connection, commentId);
-      connection.release();
-      if (result.error) return { error: true };
-      return result;
-    } catch (error) {
-      console.error(error);
-      return { error: true };
-    }
-  },
+    deleteRecordImages: async (recordId) => {
+        try {
+            const connection = await pool.getConnection();
+            const result = await recordsDao.deleteRecordImages(connection, recordId);
+            connection.release();
+            if (result.error)
+                return {error: true}
+            return {deleted: true};
+        } catch (error) {
+            return { error:true };
+        }
+    },
 
-  checkOwner: async (userId, commentId) => {
-    try {
-      const connection = await pool.getConnection(async (conn) => conn);
-      const result = await recordsDao.checkOwner(connection, userId, commentId);
-      connection.release();
-      if (result.error) return { error: true };
-      if (result === 0) return { owner : false};
-      return { owner : true };
-    } catch (error) {
-      console.error(error);
-      return { error: true };
-    }
-  },
-};
+    patchComment: async (commentId, contents) => {
+        try {
+            const connection = await pool.getConnection();
+            const result = await recordsDao.updateComment(connection, commentId, contents);
+            connection.release();
+            if (result.error)
+                return {error: true}
+            return {updated: true};
+        } catch (error) {
+            console.log(error);
+            return { error:true };
+        }
+    },
+}
 
 export default recordsProvider;

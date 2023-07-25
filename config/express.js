@@ -6,7 +6,7 @@ import recordsRouter from "../src/records/recordsRouter";
 import placesRouter from "../src/places/placesRouter";
 import reviewsRouter from "../src/reviews/reviewsRouter";
 import authRouter from "../src/auth/authRouter";
-import usersRouter from "../src/users/usersRouter";
+import userRouter from "../src/user/userRouter";
 import activitiesRouter from "../src/activities/activitiesRouter";
 import middlewares from "./middlewares";
 
@@ -22,7 +22,7 @@ app.get("/health", (req, res) => res.status(200).send(response(baseResponse.SUCC
 app.use("/places", placesRouter);
 app.use("/records", recordsRouter);
 app.use("/reviews", reviewsRouter);
-app.use("/users", usersRouter);
+app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/activities", activitiesRouter);
 

@@ -1,11 +1,10 @@
 import pool from "../../config/database";
-import usersDao from "./usersDao";
-
-const usersProvider = {
+import userDao from "./userDao";
+const userService = {
   getRecordsByUserId: async (userId) => {
     try {
       const connection = await pool.getConnection(async (conn) => conn);
-      const recordsResult = await usersDao.selectRecordsByUserId(connection, userId);
+      const recordsResult = await userDao.selectRecordsByUserId(connection, userId);
       connection.release();
       if (recordsResult.error) return { error: true };
 
@@ -21,7 +20,7 @@ const usersProvider = {
   checkUser: async (userId) => {
     try {
       const connection = await pool.getConnection(async (conn) => conn);
-      const chk = await usersDao.checkUser(connection, userId);
+      const chk = await userDao.checkUser(connection, userId);
       connection.release();
       if (chk.error) return 0;
       return chk;
@@ -34,10 +33,10 @@ const usersProvider = {
   getMyPage: async (userId) => {
     try {
       const connection = await pool.getConnection(async (conn) => conn);
-      const userOutline = await usersDao.selectMypageUserOutline(connection, userId);
-      const activities = await usersDao.selectMypageActivities(connection, userId);
-      const records = await usersDao.selectMypageRecords(connection, userId);
-      const reviews = await usersDao.selectMypageReviews(connection, userId);
+      const userOutline = await userDao.selectMypageUserOutline(connection, userId);
+      const activities = await userDao.selectMypageActivities(connection, userId);
+      const records = await userDao.selectMypageRecords(connection, userId);
+      const reviews = await userDao.selectMypageReviews(connection, userId);
       connection.release();
       if (userOutline.error || activities.error || records.error || reviews.error) return { error: true };
       return { userOutline: userOutline, activities: activities, records: records, reviews: reviews };
@@ -50,7 +49,7 @@ const usersProvider = {
   addFollower: async (userId, targetUserId) => {
     const connection = await pool.getConnection();
 
-    const result = await usersDao.insertFollow(userId, targetUserId, connection);
+    const result = await userDao.insertFollow(userId, targetUserId, connection);
 
     connection.release();
 
@@ -58,4 +57,4 @@ const usersProvider = {
   },
 };
 
-export default usersProvider;
+export default userService;
