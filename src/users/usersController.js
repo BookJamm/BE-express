@@ -130,6 +130,8 @@ const usersController = {
         }
     },
 
+    postFollowing: async (req, res) => {},
+
 }
 
 export default usersController;
