@@ -102,6 +102,19 @@ const recordsProvider = {
       return { error: true };
     }
   },
+
+  checkRecordComment: async (recordId, commentId) => {
+    try {
+      const connection = await pool.getConnection(async (conn) => conn);
+      const result = await recordsDao.checkRecordComment(connection, recordId, commentId);
+      connection.release();
+      if (result.error) return { error: true };
+      return result;
+    } catch (error) {
+      console.error(error);
+      return { error: true };
+    }
+  },
 };
 
 export default recordsProvider;

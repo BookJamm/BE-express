@@ -10,5 +10,6 @@ recordsRouter.post('/:recordId(\\d+)/images', middlewares.s3Upload.array("images
 recordsRouter.put('/:recordId(\\d+)', recordsController.putRecord);
 recordsRouter.delete('/:recordId(\\d+)/images', recordsController.deleteRecordImages);
 recordsRouter.patch('/comment/:commentId', recordsController.patchComment);
+recordsRouter.delete('/:recordId(\\d+)/comment/:commentId(\\d+)', recordsController.deleteRecordComment);
 
 export default recordsRouter;

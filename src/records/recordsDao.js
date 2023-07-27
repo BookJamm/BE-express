@@ -175,6 +175,59 @@ const recordsDao = {
             return {error: true};
         }
     },
+
+    deleteRecordComment: async (connection, recordId, commentId) => {
+        const sql = `DELETE FROM comments where comment_id = ${commentId}`;
+        try {
+            await connection.beginTransaction();
+            const result = await connection.query(sql);
+            await connection.commit();
+            return result;
+        } catch (error) {
+            await connection.rollback();
+            console.error(error);
+            return { error:true };
+        }
+    },
+
+    checkRecordComment: async (connection, recordId, commentId) => {
+        const sql = `SELECT * FROM comments WHERE comment_id = ${commentId}`;
+        try {
+            const [[comments]] = await connection.query(sql);
+            if (comments.record_id == recordId) {
+                return { error:false };
+            }
+            else return { error:true };
+        } catch (error) {
+            console.log(error);
+            return {error: true};
+        }
+    },
+
+    checkCommentCnt: async (connection, recordId) => {
+        const sql = `SELECT comment_count FROM records WHERE record_id = ${recordId}`;
+        try {
+            const [[records]] = await connection.query(sql);
+            return records.comment_count;
+        } catch (error) {
+            console.log(error);
+            return {error: true};
+        }
+    },
+
+    updateCommentCnt: async (connection, recordId, newCommentCnt) => {
+        const sql = `UPDATE records SET comment_count = "${newCommentCnt}" WHERE record_id = ${recordId}`;
+        try {
+            connection.beginTransaction();
+            const [records] = await connection.query(sql);
+            connection.commit();
+            return records;
+        } catch (error) {
+            connection.rollback();
+            console.log(error);
+            return {error: true};
+        }
+    }
 }
 
 export default recordsDao;

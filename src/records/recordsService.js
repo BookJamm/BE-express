@@ -99,6 +99,24 @@ const recordsService = {
             return { error:true };
         }
     },
+
+    deleteRecordComment: async (recordId, commentId) => {
+        try {
+            const connection = await pool.getConnection();
+            const result = await recordsDao.deleteRecordComment(connection, recordId, commentId);
+            const commentCnt = await recordsDao.checkCommentCnt(connection, recordId);
+            const subCommentCnt = await recordsDao.updateCommentCnt(connection, recordId, commentCnt - 1);
+
+            if (result.error || commentCnt.error || subCommentCnt.error)
+                return {error: true}
+
+            connection.release();
+            return { error:false };
+        } catch (error) {
+            console.log(error);
+            return { error:true };
+        }
+    },
 }
 
 export default recordsService;

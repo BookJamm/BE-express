@@ -131,6 +131,29 @@ const recordsController = {
       return res.status(500).json(response(baseResponse.SERVER_ERROR));
     }
   },
+
+  deleteRecordComment: async (req, res) => {
+    try {
+      const recordId = req.params.recordId;
+      const commentId = req.params.commentId;
+      const checkRecord = await recordsProvider.checkRecord(recordId);
+      const checkComment = await recordsProvider.checkComment(commentId);
+      const checkRecordComment = await recordsProvider.checkRecordComment(recordId, commentId);
+
+      console.log(checkRecordComment);
+      if (!recordId || checkRecord.error)
+        return res.status(404).json(response(baseResponse.RECORDID_NOT_FOUND));
+      if (!commentId || checkComment.error)
+        return res.status(404).json(response(baseResponse.COMMENT_NOT_FOUND));
+      if (checkRecordComment.error)
+        return res.status(404).json(response(baseResponse.COMMENT_NOT_FOUND))
+      const result = await recordsService.deleteRecordComment(recordId, commentId);
+      return res.status(202).json(response(baseResponse.SUCCESS));
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json(response(baseResponse.SERVER_ERROR));
+    }
+  }
 };
 
 export default recordsController;
