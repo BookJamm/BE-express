@@ -14,5 +14,6 @@ placesRouter.get("/:placeId(\\d+)", placesController.getPlaceDetails);
 
 placesRouter.post("/:placeId(\\d+)/reviews", placesController.postReview);
 placesRouter.post("/:placeId(\\d+)/bookmarks", placesController.postBookmark);
+placesRouter.delete("/:placeId(\\d+)/bookmarks", placesController.deleteBookmark);
 
 export default placesRouter;
