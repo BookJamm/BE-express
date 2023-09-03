@@ -1,7 +1,7 @@
+import axios from "axios";
+import { getRegExp } from "korean-regexp";
 import pool from "../../config/database";
 import placesDao from "./placesDao";
-import { getRegExp } from "korean-regexp";
-import axios from "axios";
 
 const getTime = () => {
   const curr = new Date();
@@ -35,7 +35,7 @@ const placesService = {
 
     searchResult = await Promise.all(
       searchResult.map(async (place) => {
-        const { road, jibun, ...rest } = place;
+        const { road, jibun, lat, lon, ...rest } = place;
 
         const images = await placesDao.selectPlaceImages(place.placeId, connection);
 
@@ -45,6 +45,10 @@ const placesService = {
           address: {
             road,
             jibun,
+          },
+          coords: {
+            lat,
+            lon,
           },
         };
       })
@@ -115,7 +119,7 @@ const placesService = {
 
         const images = await placesDao.selectPlaceImages(place.placeId, connection);
 
-        const { road, jibun, ...rest } = place;
+        const { road, jibun, lat, lon, ...rest } = place;
 
         return {
           ...rest,
@@ -124,6 +128,10 @@ const placesService = {
           address: {
             road,
             jibun,
+          },
+          coords: {
+            lat,
+            lon,
           },
         };
       })
@@ -193,7 +201,14 @@ const placesService = {
           responseType: "json",
         }).then((res) => {
           for (let book of res.data.item) {
-            const book_info = { title: book.title, author: book.author, cover: book.cover, description: book.description, publisher:book.publisher, isbn: book.isbn13 };
+            const book_info = {
+              title: book.title,
+              author: book.author,
+              cover: book.cover,
+              description: book.description,
+              publisher: book.publisher,
+              isbn: book.isbn13,
+            };
             results.push(book_info);
           }
         });
@@ -242,7 +257,7 @@ const placesService = {
       const result = await placesDao.insertBookmark(placeId, userId, connection);
       return result;
     } catch (error) {
-      return {error: true};
+      return { error: true };
     }
   },
 };
