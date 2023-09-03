@@ -260,6 +260,20 @@ const placesService = {
       return { error: true };
     }
   },
+
+  deleteBookmark: async (placeId, userId) => {
+    try {
+      const connection = await pool.getConnection();
+      const [isPlaceExists] = await placesDao.selectPlaceById(placeId, connection);
+      if (!isPlaceExists) {
+        return { error: "PlaceNotFound" };
+      }
+      const result = await placesDao.deleteBookmark(placeId, userId, connection);
+      return result;
+    } catch (error) {
+      return {error: true};
+    }
+  }
 };
 
 export default placesService;

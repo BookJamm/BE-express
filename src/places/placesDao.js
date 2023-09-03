@@ -232,6 +232,22 @@ const placesDao = {
       return { error: true };
     }
   },
+
+  deleteBookmark: async (placeId, userId, connection) => {
+    const chk = `select * from place_bookmarks where bookmarker = ${userId} and place_id = ${placeId}`;
+    const sql = `DELETE FROM place_bookmarks WHERE place_id = ${placeId} and bookmarker = ${userId}`;
+    try {
+      const [[check]] = await connection.query(chk); 
+      if (!check) return {error: "Not Bookmark"};
+      await connection.beginTransaction();
+      const [result] = await connection.query(sql);
+      await connection.commit();
+      return result;
+    } catch (error) {
+      await connection.rollback();
+      return { error: true };
+    }
+  }
 };
 
 export default placesDao;

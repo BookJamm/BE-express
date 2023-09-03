@@ -40,6 +40,8 @@ const baseResponse = {
   ACTIVITY_ALREADY_LIKED: { status: "FAIL", code: 2038, message: "이미 좋아요한 활동입니다." },
   PLACE_ID_NOT_FOUND: { status: "FAIL", code: 2039, message: "요청에 장소 id가 존재하지 않습니다." },
   CANNOT_BOOKMARK: { status: "FAIL", code: 2040, message: "북마크를 할 수 없습니다." },
+  BOOKMARK_NOT_FOUND: { status: "FAIL", code: 2041, message: "북마크하지 않은 장소입니다." },
+  CANNOT_UNBOOKMARK: { status: "FAIL", code: 2042, message: "북마크 해제를 할 수 없습니다." },
 
   //ERROR
   SERVER_ERROR: { status: "ERROR", code: 3000, message: "서버 에러" },

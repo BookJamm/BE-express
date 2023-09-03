@@ -191,6 +191,29 @@ const placesController = {
       logger.error(error);
       return res.status(500).json(response(baseResponse.SERVER_ERROR));
     }
+  },
+
+  deleteBookmark: async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const placeId = req.params.placeId;
+      if (!placeId) return res.status(404).json(response(baseResponse.PLACE_ID_NOT_FOUND));
+      const result = await placesService.deleteBookmark(placeId, userId);
+      if (result.error) {
+        if (result.error == "PlaceNotFound") {
+          return res.status(404).json(response(baseResponse.PLACE_NOT_FOUND));
+        }
+        if (result.error === "Not Bookmark") {
+          return res.status(404).json(response(baseResponse.BOOKMARK_NOT_FOUND));
+        }
+        return res.status(400).json(response(baseResponse.CANNOT_UNBOOKMARK));
+      }
+      return res.status(200).json(response(baseResponse.SUCCESS, "Un-Bookmark Success"));
+    } catch (error) {
+      console.log(error);
+      logger.error(error);
+      return res.status(500).json(response(baseResponse.SERVER_ERROR));
+    }
   }
 };
 
